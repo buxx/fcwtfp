@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use dioxus::prelude::*;
 
 pub mod session;
@@ -6,22 +7,31 @@ pub struct Backend {
     pub foo: i32,
 }
 
+// impl FromServerContext for Backend {
+//     type Rejection = BackendLayerNotFound;
+
+//     fn from_request<'life0, 'async_trait>(
+//         _: &'life0 DioxusServerContext,
+//     ) -> ::core::pin::Pin<
+//         Box<
+//             dyn ::core::future::Future<Output = Result<Self, Self::Rejection>>
+//                 + ::core::marker::Send
+//                 + 'async_trait,
+//         >,
+//     >
+//     where
+//         'life0: 'async_trait,
+//         Self: 'async_trait,
+//     {
+//         todo!()
+//     }
+// }
+
+#[async_trait]
 impl FromServerContext for Backend {
     type Rejection = BackendLayerNotFound;
 
-    fn from_request<'life0, 'async_trait>(
-        _: &'life0 DioxusServerContext,
-    ) -> ::core::pin::Pin<
-        Box<
-            dyn ::core::future::Future<Output = Result<Self, Self::Rejection>>
-                + ::core::marker::Send
-                + 'async_trait,
-        >,
-    >
-    where
-        'life0: 'async_trait,
-        Self: 'async_trait,
-    {
+    fn from_request(_: &DioxusServerContext) -> Result<Self, Self::Rejection> {
         todo!()
     }
 }

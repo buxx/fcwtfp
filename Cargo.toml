@@ -11,6 +11,7 @@ serde = { version = "1.0.197", features = ["derive"] }
 
 dioxus = { version = "0.5", features = ["fullstack", "router"] }
 dioxus-fullstack = { version = "0.5", features = ["server"] }
+async-trait = "0.1.82"
 
 # Debug
 dioxus-logger = "0.5.1"
