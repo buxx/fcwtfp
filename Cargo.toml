@@ -1,0 +1,21 @@
+[package]
+name = "fcwtfp"
+version = "0.1.0"
+authors = ["Bastien Sevajol <bastien.sevajol@algoo.fr>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0.197", features = ["derive"] }
+
+dioxus = { version = "0.5", features = ["fullstack", "router"] }
+dioxus-fullstack = { version = "0.5", features = ["server"] }
+
+# Debug
+dioxus-logger = "0.5.1"
+
+[features]
+default = []
+server = ["dioxus/axum"]
+web = ["dioxus/web"]
