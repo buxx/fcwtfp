@@ -1,27 +1,18 @@
-[package]
-name = "fcwtfp"
+[workspace]
+resolver = "2"
+members = [
+    "server"
+]
+
+
+[workspace.package]
 version = "0.1.0"
-authors = ["Bastien Sevajol <bastien.sevajol@algoo.fr>"]
-edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-serde = { version = "1.0.197", features = ["derive"] }
-dioxus = { version = "0.5", features = ["fullstack", "router"] }
+# dependencies that are shared across packages
+[workspace.dependencies]
 thiserror = "1.0.63"
 bon = "2.1.1"
-uuid = { version = "1.10.0", features = ["v4", "fast-rng"], optional = true }
-sqlx = { version = "0.8.2", features = [ "sqlite", "runtime-tokio" ], optional = true }
-tokio = { version = "1.40.0", optional = true }
-
+uuid = { version = "1.10.0", features = ["v4", "fast-rng"] }
+sqlx = { version = "0.8.2", features = [ "sqlite", "runtime-tokio" ] }
 strum = "0.26"
 strum_macros = "0.26"
-
-# Debug
-dioxus-logger = "0.5.1"
-
-[features]
-default = []
-server = ["dioxus/axum", "sqlx", "tokio", "dep:uuid"]
-web = ["dioxus/web"]
