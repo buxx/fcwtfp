@@ -1,17 +1,15 @@
 use dioxus::prelude::*;
 
-use crate::post_server_data;
+use crate::Route;
 
 #[component]
 pub fn Join() -> Element {
-    let mut key = use_signal(|| String::from("..."));
+    let mut key = use_signal(|| String::from(""));
 
     rsx! {
         h2 { "Join session" }
         form {
-            onsubmit: move |_| async move {
-                post_server_data(key.to_string()).await.unwrap();
-            },
+            onsubmit: move |_| join_session(key.to_string()),
             label { r#for: "key", "Key" },
             input {
                 value: "{key}",
@@ -21,4 +19,8 @@ pub fn Join() -> Element {
             input { r#type: "submit", value: "Join" },
         }
     }
+}
+
+fn join_session(session_key: String) {
+    navigator().replace(Route::SessionHome { session_key });
 }

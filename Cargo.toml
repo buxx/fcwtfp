@@ -8,15 +8,16 @@ edition = "2021"
 
 [dependencies]
 serde = { version = "1.0.197", features = ["derive"] }
-
 dioxus = { version = "0.5", features = ["fullstack", "router"] }
-dioxus-fullstack = { version = "0.5", features = ["server"] }
-async-trait = "0.1.82"
+thiserror = "1.0.63"
+bon = "2.1.1"
+uuid = { version = "1.10.0", features = ["v4", "fast-rng"], optional = true }
+redb = { version = "2.1.2", optional = true }
 
 # Debug
 dioxus-logger = "0.5.1"
 
 [features]
 default = []
-server = ["dioxus/axum"]
+server = ["dioxus/axum", "dep:uuid", "dep:redb"]
 web = ["dioxus/web"]

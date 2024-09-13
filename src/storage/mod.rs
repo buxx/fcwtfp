@@ -1,48 +1,28 @@
-use async_trait::async_trait;
-use dioxus::prelude::*;
-
 pub mod session;
+pub mod tech;
 
-pub struct Backend {
-    pub foo: i32,
+use redb::{
+    CommitError, Database, DatabaseError as RedbDatabaseError, StorageError, TableError,
+    TransactionError,
+};
+use thiserror::Error;
+
+const DB_FILE_PATH: &str = "db.redb";
+
+#[derive(Error, Debug)]
+pub enum DatabaseError {
+    #[error("Database error: `{0}`")]
+    Database(#[from] RedbDatabaseError),
+    #[error("Transaction error: `{0}`")]
+    Transaction(#[from] TransactionError),
+    #[error("Commit error: `{0}`")]
+    Commit(#[from] CommitError),
+    #[error("Storage error: `{0}`")]
+    Storage(#[from] StorageError),
+    #[error("Table error: `{0}`")]
+    Table(#[from] TableError),
 }
 
-// impl FromServerContext for Backend {
-//     type Rejection = BackendLayerNotFound;
-
-//     fn from_request<'life0, 'async_trait>(
-//         _: &'life0 DioxusServerContext,
-//     ) -> ::core::pin::Pin<
-//         Box<
-//             dyn ::core::future::Future<Output = Result<Self, Self::Rejection>>
-//                 + ::core::marker::Send
-//                 + 'async_trait,
-//         >,
-//     >
-//     where
-//         'life0: 'async_trait,
-//         Self: 'async_trait,
-//     {
-//         todo!()
-//     }
-// }
-
-#[async_trait]
-impl FromServerContext for Backend {
-    type Rejection = BackendLayerNotFound;
-
-    fn from_request(_: &DioxusServerContext) -> Result<Self, Self::Rejection> {
-        todo!()
-    }
+pub fn db() -> Result<Database, DatabaseError> {
+    Ok(Database::create(DB_FILE_PATH)?)
 }
-
-#[derive(Debug)]
-pub struct BackendLayerNotFound;
-
-impl std::fmt::Display for BackendLayerNotFound {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Backend was not found")
-    }
-}
-
-impl std::error::Error for BackendLayerNotFound {}

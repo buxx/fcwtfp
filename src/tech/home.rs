@@ -1,9 +1,16 @@
 use dioxus::prelude::*;
 
+use crate::{
+    session::{SessionHeader, SessionNavBar},
+    RootNavBar,
+};
+
 #[component]
-pub fn TechHome() -> Element {
+pub fn TechHome(session_key: ReadOnlySignal<String>) -> Element {
     rsx! {
-        h2 { "SESSION NAME TODO" }
+        RootNavBar {}
+        SessionHeader { session_key }
+        SessionNavBar { session_key }
         h2 { "Technologies" }
     }
 }

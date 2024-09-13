@@ -1,19 +1,26 @@
 use dioxus::prelude::*;
 
-use dioxus_logger::tracing;
+#[cfg(feature = "server")]
+use crate::session::SessionName;
+use crate::Route;
 
-use crate::storage::Backend;
+#[cfg(feature = "server")]
+use crate::storage::{self};
+
+use super::Session;
 
 #[component]
 pub fn Create() -> Element {
-    let mut name = use_signal(|| String::from("..."));
+    let mut name = use_signal(|| String::from(""));
 
     rsx! {
         h2 { "Create session" }
         form {
             onsubmit: move |_| async move {
-                let key = create_session(name.to_string()).await.unwrap();
-                tracing::info!("Created session: {}", key);
+                let session = create_and_join_session(name.to_string()).await.unwrap();
+                navigator().replace(Route::SessionHome {
+                    session_key: session.key().0.clone(),
+                });
             },
             label { r#for: "name", "Name" },
             input {
@@ -26,9 +33,8 @@ pub fn Create() -> Element {
     }
 }
 
-#[server(CrateSession)]
-async fn create_session(name: String) -> Result<String, ServerFnError> {
-    let storage: Backend = extract().await?;
-    tracing::info!("Create session: {}", name);
-    Ok(format!("key{}", storage.foo))
+#[server(CreateSession)]
+async fn create_and_join_session(name: String) -> Result<Session, ServerFnError> {
+    let session = storage::session::create_session(SessionName(name))?;
+    Ok(session)
 }

@@ -5,17 +5,39 @@ use dioxus_logger::tracing;
 use server_fn::codec::Json;
 
 mod session;
+#[cfg(feature = "server")]
 mod storage;
 mod tech;
 
 use session::home::SessionHome;
+use session::member::MembersHome;
+use session::SessionRoot;
+use tech::home::TechHome;
 
 #[derive(Clone, Routable, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+#[rustfmt::skip]
 enum Route {
     #[route("/")]
     Root {},
-    #[route("/tech")]
-    SessionHome {},
+
+    #[route("/session")]
+    SessionRoot {},
+    #[nest("/session")]
+        #[nest("/:session_key")]
+            #[route("/")]
+            SessionHome {
+                session_key: String,
+            },
+            #[route("/members")]
+            MembersHome {
+                session_key: String,
+            },
+            #[route("/tech")]
+            TechHome { 
+                session_key: String,
+             },
+        #[end_nest]
+
     #[route("/old")]
     Old {},
 }
@@ -34,11 +56,14 @@ fn App() -> Element {
 }
 
 #[component]
-fn NavBar() -> Element {
+fn RootNavBar() -> Element {
     rsx! {
         ul {
             li {
-                Link { to: Route::SessionHome {}, "Root" }
+                Link { to: Route::Root {}, "Home" }
+            }
+            li {
+                Link { to: Route::SessionRoot {}, "Session management" }
             }
             li {
                 Link { to: Route::Old {}, "Old" }
@@ -53,7 +78,7 @@ fn Old() -> Element {
     let mut text = use_signal(|| String::from("..."));
 
     rsx! {
-        NavBar { }
+        RootNavBar { }
         div {
             h1 { "High-Five counter: {count}" }
             button { onclick: move |_| count += 1, "Up high!" }
@@ -76,8 +101,7 @@ fn Old() -> Element {
 #[component]
 fn Root() -> Element {
     rsx! {
-        NavBar { }
-        SessionHome {}
+        RootNavBar { }
     }
 }
 
