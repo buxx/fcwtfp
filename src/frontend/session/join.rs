@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::Route;
+use crate::frontend::router::Route;
 
 #[component]
 pub fn Join() -> Element {

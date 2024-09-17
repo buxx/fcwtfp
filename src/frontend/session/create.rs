@@ -1,17 +1,11 @@
 use dioxus::prelude::*;
 
-#[cfg(feature = "server")]
-use crate::session::SessionName;
+use crate::api::session::create_and_join_session;
 use crate::Route;
-
-#[cfg(feature = "server")]
-use crate::storage::{self};
-
-use super::Session;
 
 #[component]
 pub fn Create() -> Element {
-    let mut name = use_signal(|| String::from(""));
+    let mut name: Signal<String> = use_signal(|| String::from(""));
 
     rsx! {
         h2 { "Create session" }
@@ -31,10 +25,4 @@ pub fn Create() -> Element {
             input { r#type: "submit", value: "Create" },
         }
     }
-}
-
-#[server(CreateSession)]
-async fn create_and_join_session(name: String) -> Result<Session, ServerFnError> {
-    let session = storage::session::create_session(SessionName(name))?;
-    Ok(session)
 }

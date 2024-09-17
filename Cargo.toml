@@ -12,12 +12,16 @@ dioxus = { version = "0.5", features = ["fullstack", "router"] }
 thiserror = "1.0.63"
 bon = "2.1.1"
 uuid = { version = "1.10.0", features = ["v4", "fast-rng"], optional = true }
-redb = { version = "2.1.2", optional = true }
+sqlx = { version = "0.8.2", features = [ "sqlite", "runtime-tokio" ], optional = true }
+tokio = { version = "1.40.0", optional = true }
+
+strum = "0.26"
+strum_macros = "0.26"
 
 # Debug
 dioxus-logger = "0.5.1"
 
 [features]
 default = []
-server = ["dioxus/axum", "dep:uuid", "dep:redb"]
+server = ["dioxus/axum", "sqlx", "tokio", "dep:uuid"]
 web = ["dioxus/web"]

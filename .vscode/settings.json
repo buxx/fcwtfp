@@ -3,5 +3,12 @@
         "oninput",
         "onsubmit",
         "Routable"
-    ]
+    ],
+    "rust-analyzer.cargo.features": [
+        "web",
+        "server"
+    ],
+    "rust-analyzer.cargo.extraEnv": {
+        "DATABASE_URL": "sqlite://db.sqlite"
+    }
 }

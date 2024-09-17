@@ -1,41 +1,15 @@
-use bon::builder;
 use create::Create;
 use dioxus::prelude::*;
 use join::Join;
-use serde::{Deserialize, Serialize};
 
-use crate::{RootNavBar, Route};
+use super::router::Route;
+use crate::{api::session::get_session, core::session::SessionKey, RootNavBar};
 
 pub mod create;
 pub mod home;
 pub mod join;
 pub mod member;
-
-#[cfg(feature = "server")]
-use crate::storage::{self};
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct SessionName(pub String);
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct SessionKey(pub String);
-
-#[builder]
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct Session {
-    name: SessionName,
-    key: SessionKey,
-}
-
-impl Session {
-    pub fn name(&self) -> &SessionName {
-        &self.name
-    }
-
-    pub fn key(&self) -> &SessionKey {
-        &self.key
-    }
-}
+pub mod tech;
 
 #[component]
 pub fn SessionNavBar(session_key: ReadOnlySignal<String>) -> Element {
@@ -83,9 +57,4 @@ pub fn SessionHeader(session_key: ReadOnlySignal<String>) -> Element {
     rsx! {
         h1 { "Session {session()?.name().0}" }
     }
-}
-
-#[server(GetSession)]
-async fn get_session(session_key: SessionKey) -> Result<Session, ServerFnError> {
-    Ok(storage::session::get_session(&session_key).unwrap())
 }
