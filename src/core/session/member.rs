@@ -12,6 +12,8 @@ pub struct Members(pub Vec<Member>);
 pub enum MembersError {
     #[error("Database error: `{0}`")]
     Database(#[from] DatabaseError),
+    #[error("Already exist")]
+    NameAlreadyExist,
 }
 
 impl Members {

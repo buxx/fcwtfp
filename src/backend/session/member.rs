@@ -6,6 +6,8 @@ use crate::{
     },
 };
 
+use sqlx::{self};
+
 use super::DatabaseError;
 
 pub async fn get_members(key: &SessionKey) -> Result<Members, MembersError> {
@@ -32,7 +34,7 @@ pub async fn get_members(key: &SessionKey) -> Result<Members, MembersError> {
 
 pub async fn add_member(key: SessionKey, member: Member) -> Result<(), MembersError> {
     let raw_discord_id = member.discord_id().map(|v| v.0.clone());
-    sqlx::query!(
+    if let Err(DatabaseError::UniqueConstraint) = sqlx::query!(
         r#"INSERT INTO session_member ( session_key, name, discord_id ) VALUES ( ?1, ?2, ?3 )"#,
         key.0,
         member.name().0,
@@ -40,7 +42,10 @@ pub async fn add_member(key: SessionKey, member: Member) -> Result<(), MembersEr
     )
     .execute(&mut *connection().await?)
     .await
-    .map_err(DatabaseError::from)?;
+    .map_err(DatabaseError::from)
+    {
+        return Err(MembersError::NameAlreadyExist);
+    };
 
     Ok(())
 }

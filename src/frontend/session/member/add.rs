@@ -6,14 +6,22 @@ use crate::{
         member::{MemberName, Members},
         SessionKey,
     },
+    frontend::generic::{message::SimpleMessage, Res},
 };
 
 #[component]
-pub fn AddMember(session_key: ReadOnlySignal<String>, members: Signal<Members>) -> Element {
+pub fn AddMember(session_key: ReadOnlySignal<String>, members: Signal<Res<Members>>) -> Element {
+    let mut error = use_signal(|| Some(String::from("")));
     let mut name = use_signal(|| String::from(""));
     let mut added = use_signal(|| false);
 
     rsx! {
+        if let Some(error_) = error() {
+            SimpleMessage {
+                color: "red",
+                text: error_
+            }
+        }
         if added() {
             p {
                 color: "green",
@@ -23,7 +31,14 @@ pub fn AddMember(session_key: ReadOnlySignal<String>, members: Signal<Members>) 
         form {
             onsubmit: move |_| async move {
                 if !name.to_string().trim().is_empty() {
-                    add_member(SessionKey(session_key.to_string()), members, MemberName(name.to_string().trim().to_string())).await;
+                    members.set(Res::Loading);
+                    if let Err(add_error) = add_member(
+                        SessionKey(session_key.to_string()),
+                        members,
+                        MemberName(name.to_string().trim().to_string())
+                    ).await {
+                        error.set(Some(add_error.to_string()))
+                    };
                     added.set(true);
                 }
             },
@@ -38,7 +53,12 @@ pub fn AddMember(session_key: ReadOnlySignal<String>, members: Signal<Members>) 
     }
 }
 
-async fn add_member(key: SessionKey, mut members: Signal<Members>, name: MemberName) {
-    post_new_member(key.clone(), name).await.unwrap();
-    *members.write() = get_members(key.clone()).await.unwrap();
+async fn add_member(
+    key: SessionKey,
+    mut members: Signal<Res<Members>>,
+    name: MemberName,
+) -> Result<(), ServerFnError> {
+    post_new_member(key.clone(), name).await?;
+    *members.write() = Res::Loaded(get_members(key.clone()).await?);
+    Ok(())
 }

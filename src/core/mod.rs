@@ -6,4 +6,6 @@ pub mod session;
 pub enum DatabaseError {
     #[error("Database error: `{0}`")]
     Database(String),
+    #[error("Unique constraint error")]
+    UniqueConstraint,
 }
