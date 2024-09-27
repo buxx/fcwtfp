@@ -1,0 +1,15 @@
+[package]
+name = "bot"
+version = { workspace = true }
+authors = ["Bastien Sevajol <contact@bux.fr>"]
+edition = "2021"
+
+
+[dependencies]
+common = { path = "../common" }
+
+poise = { workspace = true }
+tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
+
+strum = { workspace = true }
+strum_macros = { workspace = true }

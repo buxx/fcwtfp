@@ -1,3 +1,4 @@
+use common::tech::Technology;
 use dioxus::prelude::*;
 use std::str::FromStr;
 use std::string::ToString;
@@ -6,7 +7,7 @@ use strum::IntoEnumIterator;
 use crate::api::session::member::get_members;
 use crate::api::session::tech::{get_technologies_state, set_technology_state};
 use crate::core::session::member::MemberName;
-use crate::core::session::tech::{State, Technology, TechnologyState};
+use crate::core::session::tech::{State, TechnologyState};
 use crate::core::session::SessionKey;
 use crate::frontend::generic::message::SimpleMessage;
 

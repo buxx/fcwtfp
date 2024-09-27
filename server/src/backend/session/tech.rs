@@ -1,12 +1,13 @@
 use std::str::FromStr;
 
+use common::tech::Technology;
 use strum::IntoEnumIterator;
 
 use crate::{
     backend::{connection, DatabaseError},
     core::session::{
         member::MemberName,
-        tech::{State, Technology, TechnologyState, TechnologyStateError},
+        tech::{State, TechnologyState, TechnologyStateError},
         SessionKey,
     },
 };
