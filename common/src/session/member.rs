@@ -21,24 +21,6 @@ impl Members {
         Self(vec![])
     }
 
-    pub fn from_raw(raw_members: &str) -> Result<Self, MembersError> {
-        let mut members = vec![];
-
-        for raw_member in raw_members.split(';') {
-            let member_builder = Member::builder();
-            let pieces = raw_member.split(',').collect::<Vec<&str>>();
-
-            let name = MemberName(pieces.first().unwrap().to_string());
-            let member_builder = member_builder
-                .name(name)
-                .maybe_discord_id(pieces.get(1).map(|v| MemberDiscordId(v.to_string())));
-
-            members.push(member_builder.build());
-        }
-
-        Ok(Self(members))
-    }
-
     pub fn is_empty(&self) -> bool {
         self.0.len() == 0
     }
@@ -53,23 +35,6 @@ impl Members {
 
     pub fn remove_member(&mut self, name: &MemberName) {
         self.0.retain(|m| m.name.0 != name.0)
-    }
-
-    pub fn to_raw(&self) -> String {
-        self.0
-            .iter()
-            .map(|m| {
-                format!(
-                    "{},{}",
-                    m.name.0,
-                    m.discord_id
-                        .as_ref()
-                        .unwrap_or(&MemberDiscordId("".to_string()))
-                        .0
-                )
-            })
-            .collect::<Vec<String>>()
-            .join(";")
     }
 }
 
@@ -95,7 +60,7 @@ pub struct MemberDiscordId(pub String);
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Member {
     name: MemberName,
-    discord_id: Option<MemberDiscordId>,
+    discord_id: MemberDiscordId,
 }
 
 impl Member {
@@ -103,7 +68,11 @@ impl Member {
         &self.name
     }
 
-    pub fn discord_id(&self) -> Option<&MemberDiscordId> {
-        self.discord_id.as_ref()
+    pub fn discord_id(&self) -> &MemberDiscordId {
+        &self.discord_id
+    }
+
+    pub fn set_name(&mut self, name: MemberName) {
+        self.name = name;
     }
 }

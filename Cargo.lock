@@ -315,6 +315,7 @@ version = "0.1.0"
 dependencies = [
  "common",
  "poise",
+ "sqlx",
  "strum",
  "strum_macros",
  "thiserror",

@@ -17,5 +17,5 @@ pub async fn get_session(session_key: SessionKey) -> Result<Session, ServerFnErr
 
 #[server(CreateSession)]
 pub async fn create_and_join_session(name: String) -> Result<Session, ServerFnError> {
-    Ok(backend::session::create_session(SessionName(name)).await?)
+    Ok(backend::session::ensure_session(SessionName(name)).await?)
 }

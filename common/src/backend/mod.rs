@@ -1,4 +1,6 @@
-use sqlx::{pool::PoolConnection, Error as SqlxError, Sqlite, SqlitePool};
+use std::env;
+
+use sqlx::{Error as SqlxError, Pool, Sqlite, SqlitePool};
 
 use crate::{DatabaseError, DB_FILE_PATH};
 
@@ -17,6 +19,6 @@ impl From<SqlxError> for DatabaseError {
     }
 }
 
-pub async fn connection() -> Result<PoolConnection<Sqlite>, DatabaseError> {
-    Ok(SqlitePool::connect(DB_FILE_PATH).await?.acquire().await?)
+pub async fn pool() -> Result<Pool<Sqlite>, DatabaseError> {
+    Ok(SqlitePool::connect(&env::var("DB_FILE_PATH").unwrap_or(DB_FILE_PATH.to_string())).await?)
 }

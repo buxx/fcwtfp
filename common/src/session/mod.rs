@@ -8,6 +8,9 @@ pub mod tech;
 pub struct SessionName(pub String);
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct SessionDiscordId(pub String);
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SessionKey(pub String);
 
 #[builder]
@@ -24,5 +27,9 @@ impl Session {
 
     pub fn key(&self) -> &SessionKey {
         &self.key
+    }
+
+    pub fn set_name(&mut self, name: SessionName) {
+        self.name = name;
     }
 }

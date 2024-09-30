@@ -1,9 +1,10 @@
+use sqlx::{Pool, Sqlite};
 use std::str::FromStr;
 
 use strum::IntoEnumIterator;
 
 use crate::{
-    backend::{connection, DatabaseError},
+    backend::DatabaseError,
     session::{
         member::MemberName,
         tech::{State, Technology, TechnologyState, TechnologyStateError},
@@ -14,16 +15,17 @@ use crate::{
 use super::member::get_members;
 
 pub async fn get_technologies_state(
+    pool: &Pool<Sqlite>,
     key: &SessionKey,
 ) -> Result<TechnologyState, TechnologyStateError> {
     let mut state = TechnologyState::default();
-    let members = get_members(key).await?;
+    let members = get_members(pool, key).await?;
     let mut search = vec![];
     let mut done = vec![];
 
     for member in members.0 {
-        let member_searching = get_member_searching(key, &member.name()).await?;
-        let member_done = get_member_done(key, &member.name()).await?;
+        let member_searching = get_member_searching(pool, key, member.name()).await?;
+        let member_done = get_member_done(pool, key, member.name()).await?;
         search.extend(member_searching);
         done.extend(member_done);
     }
@@ -43,6 +45,7 @@ pub async fn get_technologies_state(
 
 // TODO: refactor with get_member_done
 pub async fn get_member_searching(
+    pool: &Pool<Sqlite>,
     key: &SessionKey,
     member_name: &MemberName,
 ) -> Result<Vec<Technology>, TechnologyStateError> {
@@ -56,7 +59,7 @@ pub async fn get_member_searching(
         key.0,
         member_name.0,
     )
-    .fetch_all(&mut *connection().await?)
+    .fetch_all(pool)
     .await
     .map_err(DatabaseError::from)?
     {
@@ -68,6 +71,7 @@ pub async fn get_member_searching(
 
 // TODO: refactor with get_member_searching
 pub async fn get_member_done(
+    pool: &Pool<Sqlite>,
     key: &SessionKey,
     member_name: &MemberName,
 ) -> Result<Vec<Technology>, TechnologyStateError> {
@@ -81,7 +85,7 @@ pub async fn get_member_done(
         key.0,
         member_name.0,
     )
-    .fetch_all(&mut *connection().await?)
+    .fetch_all(pool)
     .await
     .map_err(DatabaseError::from)?
     {
@@ -92,6 +96,7 @@ pub async fn get_member_done(
 }
 
 pub async fn set_technology_state(
+    pool: &Pool<Sqlite>,
     key: &SessionKey,
     member_name: &MemberName,
     technology: &Technology,
@@ -101,7 +106,7 @@ pub async fn set_technology_state(
     match state {
         State::Researching => sqlx::query!(
             r#"
-                    REPLACE into session_tech (session_key, session_member_name, name, done)
+                    REPLACE INTO session_tech (session_key, session_member_name, name, done)
                     VALUES (?1, ?2, ?3, ?4)
             "#,
             key.0,
@@ -111,7 +116,7 @@ pub async fn set_technology_state(
         ),
         State::Done => sqlx::query!(
             r#"
-                    REPLACE into session_tech (session_key, session_member_name, name, done)
+                    REPLACE INTO session_tech (session_key, session_member_name, name, done)
                     VALUES (?1, ?2, ?3, ?4)
             "#,
             key.0,
@@ -129,7 +134,7 @@ pub async fn set_technology_state(
             technology_name,
         ),
     }
-    .execute(&mut *connection().await?)
+    .execute(pool)
     .await
     .map_err(DatabaseError::from)?;
 

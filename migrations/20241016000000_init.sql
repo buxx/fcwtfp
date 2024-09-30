@@ -1,12 +1,16 @@
 CREATE TABLE IF NOT EXISTS session (
-    key TEXT PRIMARY KEY NOT NULL,
-    name TEXT NOT NULL
+    key TEXT NOT NULL,
+    discord_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    PRIMARY KEY (key)
 );
+
+CREATE INDEX idx_session_discord_id ON session (discord_id);
 
 CREATE TABLE IF NOT EXISTS session_member (
     session_key TEXT NOT NULL,
     name TEXT NOT NULL,
-    discord_id TEXT,
+    discord_id TEXT NOT NULL,
     PRIMARY KEY (session_key, name),
     FOREIGN KEY(session_key) REFERENCES session(key) ON DELETE CASCADE
 );

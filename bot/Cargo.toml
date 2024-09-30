@@ -9,6 +9,7 @@ edition = "2021"
 common = { path = "../common", features = ["backend"] }
 
 poise = { workspace = true }
+sqlx = { workspace = true }
 thiserror = { workspace = true }
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
 
