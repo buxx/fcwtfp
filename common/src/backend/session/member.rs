@@ -1,6 +1,6 @@
 use crate::{
     backend::connection,
-    core::session::{
+    session::{
         member::{Member, MemberDiscordId, MemberName, Members, MembersError},
         SessionKey,
     },

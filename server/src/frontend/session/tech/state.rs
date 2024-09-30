@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::core::session::tech::TechnologyState;
+use common::session::tech::TechnologyState;
 
 #[component]
 pub fn TechnologyStateDisplay(state: Signal<TechnologyState>) -> Element {

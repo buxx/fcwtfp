@@ -1,8 +1,8 @@
+use common::session::tech::Technology;
 use poise::serenity_prelude::*;
 use strum::IntoEnumIterator;
 
 use crate::{Context, Error};
-use common::tech::Technology;
 
 /// Test enum
 #[poise::command(slash_command, prefix_command)]

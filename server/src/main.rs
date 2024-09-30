@@ -5,9 +5,6 @@ use dioxus_logger::tracing;
 use frontend::router::Route;
 
 mod api;
-#[cfg(feature = "server")]
-mod backend;
-mod core;
 mod frontend;
 
 fn main() {

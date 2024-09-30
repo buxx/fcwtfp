@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 use thiserror::Error;
 
-use crate::core::DatabaseError;
+use crate::DatabaseError;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Members(pub Vec<Member>);

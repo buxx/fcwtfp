@@ -6,9 +6,10 @@ edition = "2021"
 
 
 [dependencies]
-common = { path = "../common" }
+common = { path = "../common", features = ["backend"] }
 
 poise = { workspace = true }
+thiserror = { workspace = true }
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
 
 strum = { workspace = true }

@@ -2,11 +2,11 @@ use dioxus::prelude::*;
 
 use crate::{
     api::session::member::{delete_member, get_members},
-    core::session::{
-        member::{MemberName, Members},
-        SessionKey,
-    },
     frontend::generic::{loading::Loading, message::SimpleMessage, Res},
+};
+use common::session::{
+    member::{MemberName, Members},
+    SessionKey,
 };
 
 #[component]

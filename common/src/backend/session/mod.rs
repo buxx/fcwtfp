@@ -1,7 +1,7 @@
 use thiserror::Error;
 use uuid::Uuid;
 
-use crate::core::session::{Session, SessionKey, SessionName};
+use crate::session::{Session, SessionKey, SessionName};
 
 use super::{connection, DatabaseError};
 

@@ -2,7 +2,6 @@ use dioxus::prelude::*;
 
 use crate::{
     api::session::member::get_members,
-    core::session::{member::Members, SessionKey},
     frontend::{
         generic::Res,
         session::{
@@ -12,6 +11,7 @@ use crate::{
     },
     RootNavBar,
 };
+use common::session::{member::Members, SessionKey};
 
 #[component]
 pub fn MembersHome(session_key: ReadOnlySignal<String>) -> Element {

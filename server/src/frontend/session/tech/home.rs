@@ -1,8 +1,8 @@
+use common::session::{tech::TechnologyState, SessionKey};
 use dioxus::prelude::*;
 
 use crate::{
     api::session::tech::get_technologies_state,
-    core::session::{tech::TechnologyState, SessionKey},
     frontend::session::{
         tech::{set::SetTechnologyState, state::TechnologyStateDisplay},
         SessionHeader, SessionNavBar,

@@ -1,8 +1,8 @@
-pub mod tech;
 use bon::builder;
 use serde::{Deserialize, Serialize};
 
 pub mod member;
+pub mod tech;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SessionName(pub String);

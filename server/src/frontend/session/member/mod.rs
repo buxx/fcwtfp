@@ -2,9 +2,9 @@ use dioxus::prelude::*;
 
 use dioxus::{prelude::Element, signals::ReadOnlySignal};
 
-use crate::core::session::member::Members;
 use crate::frontend::generic::loading::Loading;
 use crate::frontend::generic::Res;
+use common::session::member::Members;
 
 pub mod add;
 pub mod home;

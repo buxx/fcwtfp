@@ -2,11 +2,11 @@ use dioxus::prelude::*;
 
 use crate::{
     api::session::member::{get_members, post_new_member},
-    core::session::{
-        member::{MemberName, Members},
-        SessionKey,
-    },
     frontend::generic::{message::SimpleMessage, Res},
+};
+use common::session::{
+    member::{MemberName, Members},
+    SessionKey,
 };
 
 #[component]

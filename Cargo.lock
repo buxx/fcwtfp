@@ -317,6 +317,7 @@ dependencies = [
  "poise",
  "strum",
  "strum_macros",
+ "thiserror",
  "tokio",
 ]
 
@@ -459,10 +460,14 @@ dependencies = [
 name = "common"
 version = "0.1.0"
 dependencies = [
+ "bon",
  "poise",
  "serde",
+ "sqlx",
  "strum",
  "strum_macros",
+ "thiserror",
+ "uuid",
 ]
 
 [[package]]
@@ -2928,17 +2933,14 @@ dependencies = [
 name = "server"
 version = "0.1.0"
 dependencies = [
- "bon",
  "common",
  "dioxus",
  "dioxus-logger",
  "serde",
- "sqlx",
  "strum",
  "strum_macros",
  "thiserror",
  "tokio",
- "uuid",
 ]
 
 [[package]]

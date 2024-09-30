@@ -2,11 +2,11 @@ pub mod tech;
 use dioxus::prelude::*;
 
 #[cfg(feature = "server")]
-use crate::backend::{self};
+use common::backend::{self};
 #[cfg(feature = "server")]
-use crate::core::session::SessionName;
+use common::session::SessionName;
 
-use crate::core::session::{Session, SessionKey};
+use common::session::{Session, SessionKey};
 
 pub mod member;
 

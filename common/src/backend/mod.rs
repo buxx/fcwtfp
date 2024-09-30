@@ -1,12 +1,8 @@
-use sqlx::pool::PoolConnection;
-use sqlx::sqlite::SqlitePool;
-use sqlx::{Error as SqlxError, Sqlite};
+use sqlx::{pool::PoolConnection, Error as SqlxError, Sqlite, SqlitePool};
 
-use crate::core::DatabaseError;
+use crate::{DatabaseError, DB_FILE_PATH};
 
 pub mod session;
-
-const DB_FILE_PATH: &str = "sqlite://db.sqlite";
 
 // Sqlx is only compiled for backend, so convert sqlx error in string
 impl From<SqlxError> for DatabaseError {
@@ -21,7 +17,6 @@ impl From<SqlxError> for DatabaseError {
     }
 }
 
-#[cfg(feature = "server")]
 pub async fn connection() -> Result<PoolConnection<Sqlite>, DatabaseError> {
     Ok(SqlitePool::connect(DB_FILE_PATH).await?.acquire().await?)
 }

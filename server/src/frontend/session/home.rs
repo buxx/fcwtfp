@@ -1,8 +1,8 @@
+use common::session::SessionKey;
 use dioxus::prelude::*;
 
 use crate::{
     api::session::member::get_members,
-    core::session::SessionKey,
     frontend::{
         generic::Res,
         session::{member::MembersList, SessionHeader, SessionNavBar},

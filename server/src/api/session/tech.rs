@@ -1,12 +1,11 @@
-use common::tech::Technology;
 use dioxus::prelude::*;
 
 #[cfg(feature = "server")]
-use crate::backend::{self};
+use common::backend::{self};
 
-use crate::core::session::{
+use common::session::{
     member::MemberName,
-    tech::{State, TechnologyState},
+    tech::{State, Technology, TechnologyState},
     SessionKey,
 };
 

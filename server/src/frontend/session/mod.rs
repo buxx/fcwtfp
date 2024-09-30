@@ -1,9 +1,10 @@
+use common::session::SessionKey;
 use create::Create;
 use dioxus::prelude::*;
 use join::Join;
 
 use super::router::Route;
-use crate::{api::session::get_session, core::session::SessionKey, RootNavBar};
+use crate::{api::session::get_session, RootNavBar};
 
 pub mod create;
 pub mod home;
