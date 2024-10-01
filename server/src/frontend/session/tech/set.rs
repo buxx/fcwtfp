@@ -8,13 +8,13 @@ use crate::api::session::member::get_members;
 use crate::api::session::tech::{get_technologies_state, set_technology_state};
 use crate::frontend::generic::message::SimpleMessage;
 use common::session::member::MemberName;
-use common::session::tech::{State, TechnologyState};
+use common::session::tech::{State, TechnologiesState};
 use common::session::SessionKey;
 
 #[component]
 pub fn SetTechnologyState(
     session_key: ReadOnlySignal<String>,
-    state: Signal<TechnologyState>,
+    state: Signal<TechnologiesState>,
 ) -> Element {
     let members_ = use_server_future(move || async move {
         get_members(SessionKey(session_key.to_string()))
@@ -98,7 +98,7 @@ async fn apply_technology_state(
     member_name: MemberName,
     technology: Technology,
     action: State,
-    mut state: Signal<TechnologyState>,
+    mut state: Signal<TechnologiesState>,
 ) {
     set_technology_state(session_key.clone(), member_name, technology, action)
         .await

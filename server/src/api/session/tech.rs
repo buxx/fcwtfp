@@ -5,14 +5,14 @@ use common::backend::{self};
 
 use common::session::{
     member::MemberName,
-    tech::{State, Technology, TechnologyState},
+    tech::{State, TechnologiesState, Technology},
     SessionKey,
 };
 
 #[server(GetTechnologiesState)]
 pub async fn get_technologies_state(
     session_key: SessionKey,
-) -> Result<TechnologyState, ServerFnError> {
+) -> Result<TechnologiesState, ServerFnError> {
     Ok(backend::session::tech::get_technologies_state(&session_key)
         .await
         .unwrap())

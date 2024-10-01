@@ -1,4 +1,4 @@
-use common::session::{tech::TechnologyState, SessionKey};
+use common::session::{tech::TechnologiesState, SessionKey};
 use dioxus::prelude::*;
 
 use crate::{
@@ -17,7 +17,7 @@ pub fn TechHome(session_key: ReadOnlySignal<String>) -> Element {
             .await
             .unwrap()
     })?;
-    let state = use_signal(|| members_().unwrap_or(TechnologyState::default()));
+    let state = use_signal(|| members_().unwrap_or(TechnologiesState::default()));
 
     rsx! {
         RootNavBar {}

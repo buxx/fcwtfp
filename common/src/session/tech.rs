@@ -5,12 +5,14 @@ use thiserror::Error;
 
 use crate::DatabaseError;
 
-use super::member::MembersError;
+use super::member::{Member, MemberName, MembersError};
 
 #[cfg(feature = "backend")]
 use poise::ChoiceParameter;
 
-#[derive(Debug, Clone, PartialEq, EnumString, EnumIter, Display, Deserialize, Serialize)]
+#[derive(
+    Debug, Clone, PartialEq, EnumString, EnumIter, Display, Deserialize, Serialize, Eq, Hash,
+)]
 #[cfg_attr(feature = "backend", derive(ChoiceParameter))]
 pub enum Technology {
     AdvancedFlight,
@@ -111,6 +113,7 @@ pub enum Technology {
 }
 
 #[derive(Debug, Clone, PartialEq, EnumString, EnumIter, Display, Deserialize, Serialize)]
+#[cfg_attr(feature = "backend", derive(ChoiceParameter))]
 pub enum State {
     Researching,
     Done,
@@ -125,27 +128,47 @@ pub enum TechnologyStateError {
     Members(#[from] MembersError),
 }
 
-// #[builder]
-#[derive(Debug, Clone, Deserialize, Serialize, Default)]
-pub struct TechnologyState {
-    done: Vec<Technology>,
-    search: Vec<Technology>,
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct TechnologyInState(Technology, Vec<Member>);
+
+impl TechnologyInState {
+    pub fn new(technology: Technology, members: Vec<Member>) -> Self {
+        Self(technology, members)
+    }
+
+    pub fn technology_name(&self) -> &str {
+        self.0.name()
+    }
+
+    pub fn member_names(&self) -> Vec<&MemberName> {
+        self.1
+            .iter()
+            .map(|member| member.name())
+            .collect::<Vec<&MemberName>>()
+    }
 }
 
-impl TechnologyState {
-    pub fn done(&self) -> &[Technology] {
+// #[builder]
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+pub struct TechnologiesState {
+    done: Vec<TechnologyInState>,
+    search: Vec<TechnologyInState>,
+}
+
+impl TechnologiesState {
+    pub fn done(&self) -> &[TechnologyInState] {
         &self.done
     }
 
-    pub fn search(&self) -> &[Technology] {
+    pub fn search(&self) -> &[TechnologyInState] {
         &self.search
     }
 
-    pub fn add_search(&mut self, technology: Technology) {
-        self.search.push(technology)
+    pub fn add_search(&mut self, value: TechnologyInState) {
+        self.search.push(value)
     }
 
-    pub fn add_done(&mut self, technology: Technology) {
-        self.done.push(technology)
+    pub fn add_done(&mut self, value: TechnologyInState) {
+        self.done.push(value)
     }
 }

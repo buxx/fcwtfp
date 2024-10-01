@@ -1,9 +1,9 @@
 use dioxus::prelude::*;
 
-use common::session::tech::TechnologyState;
+use common::session::tech::TechnologiesState;
 
 #[component]
-pub fn TechnologyStateDisplay(state: Signal<TechnologyState>) -> Element {
+pub fn TechnologyStateDisplay(state: Signal<TechnologiesState>) -> Element {
     let state_ = state();
 
     rsx! {
@@ -12,7 +12,7 @@ pub fn TechnologyStateDisplay(state: Signal<TechnologyState>) -> Element {
             ul {
                 for technology in state_.done() {
                     li {
-                        "{technology.to_string()}"
+                        "{technology.technology_name()}"
                     }
                 }
             }
@@ -24,7 +24,7 @@ pub fn TechnologyStateDisplay(state: Signal<TechnologyState>) -> Element {
             ul {
                 for technology in state_.search() {
                     li {
-                        "{technology.to_string()}"
+                        "{technology.technology_name()}"
                     }
                 }
             }

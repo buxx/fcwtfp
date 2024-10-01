@@ -41,11 +41,40 @@ pub enum SyncGuildError {
     SessionError(#[from] SessionError),
 }
 
-pub async fn sync(ctx: &serenity::Context, ready: &serenity::Ready) -> Result<(), SyncError> {
+pub async fn sync_all(ctx: &serenity::Context, ready: &serenity::Ready) -> Result<(), SyncError> {
     let pool = pool().await?;
 
     sync_guilds(&pool, ctx, ready).await?;
     sync_members(&pool, ctx, ready).await?;
+
+    Ok(())
+}
+
+pub async fn sync_new_member(
+    _ctx: &serenity::Context,
+    new_member: &serenity::Member,
+) -> Result<(), SyncError> {
+    let pool = pool().await?;
+    match get_session(&pool, &SessionDiscordId(new_member.guild_id.to_string())).await {
+        Ok(session) => {
+            if let Err(error) = sync_member(&pool, session.key(), new_member).await {
+                //
+                return Err(SyncError::SyncMembers(vec![(
+                    new_member.guild_id,
+                    None,
+                    error,
+                )]));
+            }
+        }
+        Err(error) => {
+            //
+            return Err(SyncError::SyncMembers(vec![(
+                new_member.guild_id,
+                None,
+                SyncMemberError::Session(error),
+            )]));
+        }
+    }
 
     Ok(())
 }
