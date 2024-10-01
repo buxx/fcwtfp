@@ -1,4 +1,4 @@
-use command::tech::tech;
+use command::tech::technology;
 use event::event_handler;
 use poise::serenity_prelude as serenity;
 
@@ -18,7 +18,7 @@ async fn main() {
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![tech()],
+            commands: vec![technology()],
             ..Default::default()
         })
         .setup(|ctx, _ready, framework| {

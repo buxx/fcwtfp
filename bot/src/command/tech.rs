@@ -4,12 +4,10 @@ use strum::IntoEnumIterator;
 
 use crate::{Context, Error};
 
-/// Test enum
 #[poise::command(slash_command, prefix_command)]
-pub async fn tech(
+pub async fn technology(
     ctx: Context<'_>,
-    // #[autocomplete = "callback()"]
-    #[autocomplete = "autocomplete_technology"] tech: String,
+    #[autocomplete = "autocomplete_technology"] tech: Technology,
 ) -> Result<(), Error> {
     let response = format!("Ya! {}", tech);
     ctx.say(response).await?;
