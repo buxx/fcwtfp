@@ -1,3 +1,4 @@
+pub mod city;
 use bon::builder;
 use serde::{Deserialize, Serialize};
 

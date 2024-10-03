@@ -1,4 +1,4 @@
-use command::tech::tech;
+use command::{city::city, tech::tech};
 use event::event_handler;
 use poise::serenity_prelude as serenity;
 
@@ -25,7 +25,7 @@ async fn main() {
             })
         })
         .options(poise::FrameworkOptions {
-            commands: vec![tech()],
+            commands: vec![tech(), city()],
             event_handler: |ctx, event, framework, data| {
                 Box::pin(event_handler(ctx, event, framework, data))
             },

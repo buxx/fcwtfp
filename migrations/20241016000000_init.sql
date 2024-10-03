@@ -23,3 +23,12 @@ CREATE TABLE IF NOT EXISTS session_tech (
     PRIMARY KEY (session_key, session_member_discord_id, name),
     FOREIGN KEY(session_key, session_member_discord_id) REFERENCES session_member(session_key, discord_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS session_city (
+    session_key TEXT NOT NULL,
+    session_member_discord_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    trade INTEGER,
+    PRIMARY KEY (session_key, session_member_discord_id, name),
+    FOREIGN KEY(session_key, session_member_discord_id) REFERENCES session_member(session_key, discord_id) ON DELETE CASCADE
+);

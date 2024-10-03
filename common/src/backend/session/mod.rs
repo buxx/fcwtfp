@@ -6,6 +6,7 @@ use crate::session::{Session, SessionDiscordId, SessionKey, SessionName};
 
 use super::DatabaseError;
 
+pub mod city;
 pub mod member;
 pub mod tech;
 
