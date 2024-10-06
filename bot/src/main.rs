@@ -6,6 +6,7 @@ mod command;
 mod event;
 mod sync;
 mod tech;
+mod util;
 
 struct Data {} // User data, which is stored and accessible in all command invocations
 type Error = Box<dyn std::error::Error + Send + Sync>;

@@ -1,32 +1,12 @@
 use common::{
-    backend::{
-        pool,
-        session::{
-            city::{add_city, city_exist},
-            get_session, SessionError,
-        },
-    },
-    session::{
-        city::CityError, member::MemberDiscordId, tech::TechnologyStateError, SessionDiscordId,
-    },
-    DatabaseError,
+    backend::session::city::{add_city, city_exist},
+    session::member::MemberDiscordId,
 };
 use poise::serenity_prelude::{self as serenity};
-use thiserror::Error as ThisError;
 
-use crate::{Context, Error};
+use crate::{command::extract_from_context, Context, Error};
 
-#[derive(ThisError, Debug)]
-pub enum CityCommandError {
-    #[error("Internal error")]
-    Database(#[from] DatabaseError),
-    #[error("Internal error")]
-    Session(#[from] SessionError),
-    #[error("Internal error")]
-    City(#[from] CityError),
-    #[error("Internal error")]
-    TechnologyState(#[from] TechnologyStateError),
-}
+use super::CommandError;
 
 #[poise::command(slash_command, prefix_command, subcommands("add", "remove"))]
 pub async fn city(_ctx: Context<'_>) -> Result<(), Error> {
@@ -39,65 +19,49 @@ pub async fn add(
     name: String,
     user: Option<serenity::User>,
 ) -> Result<(), Error> {
-    let pool = match pool().await {
-        Ok(pool) => pool,
-        Err(error) => {
-            eprintln!("Error during `tech` command: {:?}", error);
-            return Err(Box::new(CityCommandError::from(error)));
+    if let Err(error) = _add(ctx, name, user).await {
+        if let CommandError::Managed(_) = error {
+            return Err(Box::new(error));
         }
-    };
 
-    if let Some(author) = ctx.author_member().await {
-        if let Some(guild_id) = ctx.guild_id() {
-            let session = match get_session(&pool, &SessionDiscordId(guild_id.to_string())).await {
-                Ok(pool) => pool,
-                Err(error) => {
-                    eprintln!("Error during `tech` command: {:?}", error);
-                    return Err(Box::new(CityCommandError::from(error)));
-                }
-            };
-
-            let user_id = user.clone().map(|u| u.id).unwrap_or(author.user.id);
-            match city_exist(
-                &pool,
-                session.key(),
-                &MemberDiscordId(user_id.to_string()),
-                &name,
-            )
-            .await
-            {
-                Ok(true) => {
-                    ctx.say("This city is already known".to_string()).await?;
-                    return Ok(());
-                }
-                Ok(false) => {}
-                Err(error) => {
-                    eprintln!("Error during `tech` command: {:?}", error);
-                    return Err(Box::new(CityCommandError::from(error)));
-                }
-            }
-
-            if let Err(error) = add_city(
-                &pool,
-                session.key(),
-                &MemberDiscordId(user_id.to_string()),
-                &name,
-            )
-            .await
-            {
-                eprintln!("Error during `tech` command: {:?}", error);
-                return Err(Box::new(CityCommandError::from(error)));
-            }
-
-            ctx.say("City added".to_string()).await?;
-            return Ok(());
-        } else {
-            eprintln!("Error during `tech` command: no guild id was in context");
-        }
-    } else {
-        eprintln!("Error during `tech` command: no author");
+        eprintln!("Error during add city command: {}", error);
+        return Err(Box::new(error));
     }
 
+    Ok(())
+}
+
+async fn _add(
+    ctx: Context<'_>,
+    name: String,
+    user: Option<serenity::User>,
+) -> Result<(), CommandError> {
+    let (pool, author, session) = extract_from_context(ctx).await?;
+    let user_id = user.clone().map(|u| u.id).unwrap_or(author.user.id);
+
+    if city_exist(
+        &pool,
+        session.key(),
+        &MemberDiscordId(user_id.to_string()),
+        &name,
+    )
+    .await
+    .map_err(CommandError::managed)?
+    {
+        ctx.say("This city is already known".to_string()).await?;
+        return Ok(());
+    }
+
+    add_city(
+        &pool,
+        session.key(),
+        &MemberDiscordId(user_id.to_string()),
+        &name,
+    )
+    .await
+    .map_err(CommandError::unexpected)?;
+
+    ctx.say("City added".to_string()).await?;
     Ok(())
 }
 
