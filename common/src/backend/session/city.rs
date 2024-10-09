@@ -2,12 +2,14 @@ use sqlx::{Pool, Sqlite};
 
 use crate::{
     session::{
-        city::{City, CityError},
+        city::{CitiesState, City, CityError, CityInState, CityState},
         member::MemberDiscordId,
         SessionKey,
     },
     DatabaseError,
 };
+
+use super::member::get_members;
 
 pub async fn city_exist(
     pool: &Pool<Sqlite>,
@@ -24,6 +26,21 @@ pub async fn city_exist(
     .fetch_one(pool)
     .await
     .map_err(DatabaseError::from)?)
+}
+
+pub async fn get_cities(
+    pool: &Pool<Sqlite>,
+    session_key: &SessionKey,
+    member_discord_id: &MemberDiscordId,
+) -> Result<Vec<City>, CityError> {
+    Ok(sqlx::query!(
+        r#"SELECT name FROM session_city WHERE session_key = ?1 AND session_member_discord_id = ?2"#,
+        session_key.0,
+        member_discord_id.0
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(DatabaseError::from)?.iter().map(|raw_city| City::builder().name(raw_city.name.to_string()).build()).collect())
 }
 
 pub async fn add_city(
@@ -81,4 +98,22 @@ pub async fn find_city_by_partial_name(
     .iter()
     .map(|city_raw| City::builder().name(city_raw.name.to_string()).build())
     .collect())
+}
+
+pub async fn get_cities_state(
+    pool: &Pool<Sqlite>,
+    session_key: &SessionKey,
+) -> Result<CitiesState, CityError> {
+    let mut cities = vec![];
+
+    for member in get_members(pool, session_key).await?.members() {
+        let mut member_cities = vec![];
+        for city in get_cities(pool, session_key, member.discord_id()).await? {
+            let city_in_state = CityInState::new(city, CityState::Nothing);
+            member_cities.push(city_in_state);
+        }
+        cities.push((member.clone(), member_cities));
+    }
+
+    Ok(CitiesState::builder().cities(cities).build())
 }

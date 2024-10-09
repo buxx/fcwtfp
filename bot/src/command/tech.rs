@@ -14,8 +14,13 @@ use crate::{command::CommandError, tech::TechnologyStateMarkdown, Context, Error
 
 use super::extract_from_context;
 
+#[poise::command(slash_command, prefix_command, subcommands("set", "list"))]
+pub async fn tech(_ctx: Context<'_>) -> Result<(), Error> {
+    Ok(())
+}
+
 #[poise::command(slash_command, prefix_command)]
-pub async fn tech(
+pub async fn set(
     ctx: Context<'_>,
     state: State,
     #[autocomplete = "autocomplete_technology"] tech: String,
@@ -79,4 +84,17 @@ async fn autocomplete_technology(
             serenity::AutocompleteChoice::new(technology.to_string(), technology.to_string())
         })
         .collect()
+}
+
+#[poise::command(slash_command, prefix_command)]
+pub async fn list(ctx: Context<'_>) -> Result<(), Error> {
+    let (pool, _, session) = extract_from_context(ctx).await?;
+
+    let technology_state = get_technologies_state(&pool, session.key())
+        .await
+        .map_err(CommandError::unexpected)?;
+    let md = TechnologyStateMarkdown::from(technology_state);
+    ctx.say(md.0).await?;
+
+    Ok(())
 }

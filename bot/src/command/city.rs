@@ -1,14 +1,16 @@
 use common::{
-    backend::session::city::{add_city, city_exist, find_city_by_partial_name, remove_city},
+    backend::session::city::{
+        add_city, city_exist, find_city_by_partial_name, get_cities_state, remove_city,
+    },
     session::member::MemberDiscordId,
 };
 use poise::serenity_prelude::{self as serenity};
 
-use crate::{command::extract_from_context, Context, Error};
+use crate::{city::CitiesStateMarkdown, command::extract_from_context, Context, Error};
 
 use super::CommandError;
 
-#[poise::command(slash_command, prefix_command, subcommands("add", "remove"))]
+#[poise::command(slash_command, prefix_command, subcommands("add", "remove", "list"))]
 pub async fn city(_ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
@@ -104,12 +106,7 @@ async fn autocomplete_city_name(
             //
             cities
                 .iter()
-                .map(|city| {
-                    serenity::AutocompleteChoice::new(
-                        city.name().to_string(),
-                        city.name().to_string(),
-                    )
-                })
+                .map(|city| serenity::AutocompleteChoice::new(city.name(), city.name()))
                 .collect()
         }
         Err(error) => {
@@ -117,4 +114,15 @@ async fn autocomplete_city_name(
             vec![]
         }
     }
+}
+
+#[poise::command(slash_command, prefix_command)]
+pub async fn list(ctx: Context<'_>) -> Result<(), Error> {
+    let (pool, _, session) = extract_from_context(ctx).await?;
+
+    let state = get_cities_state(&pool, session.key()).await?;
+    let md = CitiesStateMarkdown::from(state);
+    ctx.say(md.0).await?;
+
+    Ok(())
 }

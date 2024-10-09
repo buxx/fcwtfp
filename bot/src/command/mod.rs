@@ -5,7 +5,7 @@ use common::{
         pool,
         session::{get_session, SessionError},
     },
-    session::{city::CityError, Session, SessionDiscordId},
+    session::{Session, SessionDiscordId},
     DatabaseError,
 };
 use poise::serenity_prelude::{self as serenity};

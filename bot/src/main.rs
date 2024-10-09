@@ -2,6 +2,7 @@ use command::{city::city, tech::tech};
 use event::event_handler;
 use poise::serenity_prelude as serenity;
 
+mod city;
 mod command;
 mod event;
 mod sync;
